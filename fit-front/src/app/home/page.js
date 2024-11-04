@@ -1,4 +1,3 @@
-'use client'
 import jwt from 'jsonwebtoken'
 import { useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
@@ -37,14 +36,12 @@ var isToday = require('dayjs/plugin/isToday')
 
 dayjs.extend(isToday)
 
-// Replace this with your actual Unsplash API Key and URL
-const UNSPLASH_API_KEY = '8Rm4rBtXqVlW7LyutI1Y9IsMDC5ovu-OkHqq1NxuCyA'
 const UNSPLASH_API_URL = 'https://api.unsplash.com/search/photos'
 
 export default function Home() {
   const router = useRouter()
-  const [user, setUser] = useState(null) // Default null to signify loading state
-  const [currentMealData, setCurrentMealData] = useState(null) // For meal data loading
+  const [user, setUser] = useState(null)
+  const [currentMealData, setCurrentMealData] = useState(null)
   const [currentWorkoutData, setCurrentWorkoutData] = useState(null)
   const [currentMealImage, setCurrentMealImage] = useState(null)
   const [totalCalories, setTotalCalories] = useState(0)
@@ -52,7 +49,6 @@ export default function Home() {
   const [totalProtein, setTotalProtein] = useState(0)
   const [totalCarbo, setTotalCarbo] = useState(0)
 
-  // Helper function to get token from cookies
   const getCookie = (name) => {
     const value = `; ${document.cookie}`
     const parts = value.split(`; ${name}=`)
@@ -60,7 +56,7 @@ export default function Home() {
   }
 
   const fetchUserData = async () => {
-    const token = getCookie('token') // Retrieve token from cookies
+    const token = getCookie('token')
     if (!token) {
       router.push('/login')
       return
@@ -165,7 +161,7 @@ export default function Home() {
   const fetchMealImage = async (foodname) => {
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL}?query=${encodeURIComponent(foodname)}&client_id=${UNSPLASH_API_KEY}&lang=fr`
+        `${UNSPLASH_API_URL}?query=${encodeURIComponent(foodname)}&client_id=${process.env.UNSPLASH_API_KEY}&lang=fr`
       )
       const data = await response.json()
       if (data.results && data.results.length > 0) {
