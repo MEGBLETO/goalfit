@@ -1,0 +1,169 @@
+[
+  {
+    "date": "2024-09-20",
+    "workouts": [
+      {
+        "name": "Force et hypertrophie",
+        "description": "Session axée sur le renforcement des muscles en utilisant des poids lourds et un volume modéré pour minimiser la pression sur le genou.",
+        "duration": "90 minutes",
+        "intensity": "Haute",
+        "exercises": [
+          {
+            "name": "Squat avec haltères (modification)",
+            "reps": "3 séries de 8 reps"
+          },
+          {
+            "name": "Soulevé de terre jambes tendues",
+            "reps": "3 séries de 8 reps"
+          },
+          {
+            "name": "Presse à haltères sur banc incliné",
+            "reps": "4 séries de 10 reps"
+          },
+          {
+            "name": "Curl barre",
+            "reps": "3 séries de 12 reps"
+          },
+          {
+            "name": "Extensions triceps avec haltère",
+            "reps": "3 séries de 12 reps"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-21",
+    "workouts": [
+      {
+        "name": "Cardio modéré",
+        "description": "Session de cardio visant à améliorer l’endurance tout en étant doux sur les articulations.",
+        "duration": "90 minutes",
+        "intensity": "Modérée",
+        "exercises": [
+          {
+            "name": "Vélo stationnaire",
+            "reps": "45 minutes"
+          },
+          {
+            "name": "Rameur",
+            "reps": "45 minutes"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-22",
+    "workouts": [
+      {
+        "name": "Journée active de récupération",
+        "description": "Activités légères pour favoriser la récupération et la mobilité, en évitant les mouvements qui sollicitent le genou.",
+        "duration": "60 minutes",
+        "intensity": "Basse",
+        "exercises": [
+          {
+            "name": "Marche rapide ou natation",
+            "reps": "60 minutes"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-23",
+    "workouts": [
+      {
+        "name": "Force du corps supérieur et du noyau",
+        "description": "Renforcement du haut du corps et du tronc pour une meilleure posture et un équilibre musculaire.",
+        "duration": "90 minutes",
+        "intensity": "Haute",
+        "exercises": [
+          {
+            "name": "Rowing penché avec haltères",
+            "reps": "4 séries de 10 reps"
+          },
+          {
+            "name": "Développé militaire debout",
+            "reps": "3 séries de 8 reps"
+          },
+          {
+            "name": "Tirage poitrine avec haltère",
+            "reps": "3 séries de 10 reps"
+          },
+          {
+            "name": "Planche",
+            "reps": "4 séries de 60 secondes"
+          },
+          {
+            "name": "Crunches",
+            "reps": "3 séries de 15 reps"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-24",
+    "workouts": [
+      {
+        "name": "Hypertrophie et force des jambes (modifié)",
+        "description": "Travail intensif des jambes en limitant l’impact et la pression sur le genou.",
+        "duration": "90 minutes",
+        "intensity": "Haute",
+        "exercises": [
+          {
+            "name": "Leg Press (léger)",
+            "reps": "4 séries de 12 reps"
+          },
+          {
+            "name": "Extensions de jambes assis",
+            "reps": "3 séries de 15 reps"
+          },
+          {
+            "name": "Curls de jambes allongé",
+            "reps": "3 séries de 15 reps"
+          },
+          {
+            "name": "Fentes latérales avec haltères",
+            "reps": "3 séries de 10 reps par jambe"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-25",
+    "workouts": [
+      {
+        "name": "Cardio et endurance",
+        "description": "Une session de cardio longue durée pour booster l'endurance, avec des intervalles pour plus d'efficacité.",
+        "duration": "90 minutes",
+        "intensity": "Haute",
+        "exercises": [
+          {
+            "name": "Circuit cardio (incluant vélo stationnaire, sauts à la corde, rameur)",
+            "reps": "3 circuits de 30 minutes"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2024-09-26",
+    "workouts": [
+      {
+        "name": "Restauration et mobilité",
+        "description": "Focus sur la restauration musculaire et l'amélioration de la mobilité générale.",
+        "duration": "90 minutes",
+        "intensity": "Basse",
+        "exercises": [
+          {
+            "name": "Yoga ou Pilates",
+            "reps": "90 minutes"
+          }
+        ]
+      }
+    ]
+  }
+]

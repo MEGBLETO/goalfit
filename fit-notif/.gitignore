@@ -1,0 +1,16 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore TypeScript build output
+dist/
+
+# Ignore .env file which contains sensitive information
+.env
+
+# Ignore any local editor/IDE configuration
+.vscode/
+.idea/
+
+# Optional: Uncomment these lines if you use npm for package management
+# npm debug log files
+npm-debug.log

@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* styles.css */
+.btn {
+  @apply px-4 py-2 rounded shadow focus:outline-none;
+}
+
+@layer base {
+  html,
+  body {
+    @apply dark:bg-gray-900;
+  }
+}
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+.stroke-text {
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.61); /* Outline thickness and color */
+}
+
+@media (min-width: 1024px) {
+  .lg-hide-children > div {
+    display: none;
+  }
+}

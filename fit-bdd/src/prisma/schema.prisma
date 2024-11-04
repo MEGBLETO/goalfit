@@ -1,0 +1,207 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                     Int                      @id @default(autoincrement())
+  email                  String                   @unique
+  surname                String
+  name                   String
+  password               String?
+  contact                String?                  @unique
+  googleId               String?                  @unique
+  xId                    String?                  @unique
+  age                    Int?
+  gender                 String?
+  weight                 Float?
+  height                 Float?
+  fitnessLevel           String?
+  stripeCustomerId       String?                  @unique
+  goals                  Goal[]
+  dietaryPreferences     DietaryPreference?
+  equipment              String[]
+  availability           Availability?
+  healthConsiderations   String[]
+  mealPlans              MealPlan[]
+  workoutPlans           WorkoutPlan[]
+  weightEntries          UserWeightEntry[]
+  provisionalWeights     ProvisionalWeightEntry[]
+  isRegistrationComplete Boolean                  @default(false)
+  firstLogin             Boolean                  @default(true)
+  isEmailVerified        Boolean                  @default(false)
+  verificationToken      String?
+  otp                    String?
+  otpExpiresAt           DateTime?
+  resetToken             String?
+  resetTokenExpiry       DateTime?
+  subscription           Subscription?
+  factures               Facture[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               Int       @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  stripeCustomerId     String
+  stripeSubscriptionId String    @unique
+  status               String
+  startDate            DateTime?  
+  endDate              DateTime?  
+  payments             Payment[] 
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now())
+}
+
+model Payment {
+  id                    Int          @id @default(autoincrement())
+  subscriptionId        String
+  subscription          Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  stripePaymentIntentId String       @unique
+  status                String
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @default(now())
+}
+
+model Goal {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+}
+
+model DietaryPreference {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         String
+  restrictions String[]
+  dislikes     String[]
+}
+
+model Availability {
+  id            Int  @id @default(autoincrement())
+  userId        Int  @unique
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  daysPerWeek   Int
+  minutesPerDay Int
+}
+
+model MealPlan {
+  id              Int      @id @default(autoincrement())
+  userId          Int?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day             DateTime
+  morningMealId   Int
+  afternoonMealId Int
+  eveningMealId   Int
+  morningMeal     Meal     @relation(name: "MorningMeal", fields: [morningMealId], references: [id], onDelete: Cascade)
+  afternoonMeal   Meal     @relation(name: "AfternoonMeal", fields: [afternoonMealId], references: [id], onDelete: Cascade)
+  eveningMeal     Meal     @relation(name: "EveningMeal", fields: [eveningMealId], references: [id], onDelete: Cascade)
+  isDefault       Boolean  @default(false) 
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, day])
+}
+
+model WorkoutPlan {
+  id        Int       @id @default(autoincrement())
+  userId    Int?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day       DateTime
+  workouts  Workout[]
+  isDefault Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, day])
+}
+
+model Meal {
+  id                 Int        @id @default(autoincrement())
+  name               String
+  ingredients        String[]
+  steps              String[]
+  nutritionId        Int?       @unique
+  nutrition          Nutrition? @relation(fields: [nutritionId], references: [id])
+  morningMealPlans   MealPlan[] @relation(name: "MorningMeal")
+  afternoonMealPlans MealPlan[] @relation(name: "AfternoonMeal")
+  eveningMealPlans   MealPlan[] @relation(name: "EveningMeal")
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @default(now())
+}
+
+model Workout {
+  id            Int          @id @default(autoincrement())
+  workoutPlanId Int?
+  workoutPlan   WorkoutPlan? @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  name          String
+  description   String
+  duration      String
+  intensity     String
+  exercises     Exercise[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Facture {
+  id              Int        @id @default(autoincrement())
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id])
+  s3url           String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Exercise {
+  id          Int      @id @default(autoincrement())
+  workoutId   Int
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  name        String
+  reps        String
+  bodyPart    String?   // New field for body part
+  description String?   // Description of the exercise
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Nutrition {
+  id            Int      @id @default(autoincrement())
+  calories      Int
+  protein       String
+  carbohydrates String
+  fat           String
+  meal          Meal?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+
+model UserWeightEntry {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  weight    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProvisionalWeightEntry {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  weight    Float
+  month     Int
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@unique([userId, month, year])
+}
