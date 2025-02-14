@@ -1,3 +1,4 @@
+"use client";
 import jwt from 'jsonwebtoken'
 import { useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'

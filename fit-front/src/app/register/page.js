@@ -55,7 +55,7 @@ export default function Home() {
 
       <div className="flex-1 flex-col md:flex hidden bg-blue-600 text-white px-8 dark:bg-blue-700 dark:text-white">
         <div className="flex justify-start items-center py-2">
-          <Link href="/" className="cursor-pointer flex items-center">  {/* Logo and text in a link */}
+          <Link href="/" className="cursor-pointer flex items-center"> 
             <Logo />
             <h1 className="text-xl font-bold ms-2 font-mono">GoalFit</h1>
           </Link>
@@ -72,7 +72,7 @@ export default function Home() {
         <div
           className="md:hidden flex justify-start items-center py-2 w-full"
         >
-          <Link href="/" className="cursor-pointer flex items-center">  {/* Logo and text in a link */}
+          <Link href="/" className="cursor-pointer flex items-center"> 
             <Logo color="#3b82f6" />
             <h1 className="text-xl font-bold ms-2 font-mono text-blue-600 dark:text-blue-400">
               GoalFit
