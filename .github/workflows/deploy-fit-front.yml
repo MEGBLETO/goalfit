@@ -1,11 +1,11 @@
-name: Deploy Fit-Front to AWS S3
+name: Deploy Fit-Front to AWS S3 & CloudFront
 
 on:
   push:
     branches:
-      - main
+      - main 
     paths:
-      - 'fit-front/**' 
+      - 'fit-front/**'  
 
 jobs:
   deploy:
@@ -19,29 +19,28 @@ jobs:
         working-directory: fit-front
         run: npm install
 
-      - name: 🔨 Build Next.js App with ENV Variables
+      - name: 🔨 Build Next.js App
         working-directory: fit-front
         env:
           NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
-          NEXT_JWT_SECRET: ${{ secrets.NEXT_PUBLIC_API_KEY }}
         run: |
           echo "NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}" >> .env.local
           echo "NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}" >> .env.local
           npm run build
 
-
-      - name: ⬆️ Deploy to S3
+      - name: ⬆️ Deploy Only `fit-front/out/` to S3
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --delete
+          source_dir: "fit-front/out"  
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: 🔄 Invalidate CloudFront Cache (Optional)
+      - name: 🔄 Invalidate CloudFront Cache
         if: env.AWS_CLOUDFRONT_DISTRIBUTION_ID != ''
         uses: chetan/invalidate-cloudfront-action@v2
         env:
