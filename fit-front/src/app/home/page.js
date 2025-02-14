@@ -111,7 +111,7 @@ export default function Home() {
     }
   }
 
-  
+
   const fetchMealPlans = async (id) => {
     const token = getCookie('token')
 
@@ -231,6 +231,7 @@ export default function Home() {
     return weightData
   }
 
+  
   const currentWeight = 95
   const targetWeight = 87
   const progressMonths = 6
