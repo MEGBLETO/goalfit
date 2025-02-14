@@ -232,6 +232,7 @@ export default function Home() {
   }
 
   
+  
   const currentWeight = 95
   const targetWeight = 87
   const progressMonths = 6

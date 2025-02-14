@@ -3,7 +3,7 @@ name: Deploy Fit-Front to AWS S3 & CloudFront
 on:
   push:
     branches:
-      - main  
+      - main 
     paths:
       - 'fit-front/**'  
 
