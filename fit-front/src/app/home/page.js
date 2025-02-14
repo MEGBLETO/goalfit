@@ -56,6 +56,7 @@ export default function Home() {
     if (parts.length === 2) return parts.pop().split(';').shift()
   }
 
+  
   const fetchUserData = async () => {
     const token = getCookie('token')
     if (!token) {
