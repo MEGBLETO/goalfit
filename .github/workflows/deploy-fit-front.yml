@@ -39,7 +39,7 @@ jobs:
       - name: ⬆️ Deploy Only `fit-front/out/` to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-          args: --delete --exclude ".git/*" --exclude "node_modules/*" --exclude "*.env*" --exclude ".gitignore"
+          args: --delete --exclude ".git*" --exclude "node_modules*" --exclude "*.env*" --exclude ".gitignore"
           source_dir: "fit-front/out"  
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
