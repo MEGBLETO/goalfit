@@ -111,6 +111,7 @@ export default function Home() {
     }
   }
 
+  
   const fetchMealPlans = async (id) => {
     const token = getCookie('token')
 
