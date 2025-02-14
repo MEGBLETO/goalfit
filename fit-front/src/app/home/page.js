@@ -62,7 +62,6 @@ export default function Home() {
       router.push('/login')
       return
     }
-
     try {
       const decoded = jwt.decode(token)
 
@@ -231,7 +230,7 @@ export default function Home() {
     return weightData
   }
 
-  
+
   
   const currentWeight = 95
   const targetWeight = 87

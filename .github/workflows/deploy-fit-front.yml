@@ -12,8 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚀 Checkout Repository
+      - name: 🚀 Checkout Only `fit-front`
         uses: actions/checkout@v3
+        with:
+          sparse-checkout: "fit-front"
+          sparse-checkout-cone-mode: false
 
       - name: 📦 Install Dependencies
         working-directory: fit-front
