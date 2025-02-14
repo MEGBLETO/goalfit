@@ -39,7 +39,7 @@ jobs:
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --delete
-          source_dir: "fit-front/out"  
+          source_dir: "fit-front/out" 
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

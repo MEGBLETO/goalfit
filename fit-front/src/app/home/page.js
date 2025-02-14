@@ -63,7 +63,6 @@ export default function Home() {
       router.push('/login')
       return
     }
-
     
     try {
       const decoded = jwt.decode(token)
