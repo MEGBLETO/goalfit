@@ -3,7 +3,7 @@ name: Deploy Fit-Front to AWS S3 & CloudFront
 on:
   push:
     branches:
-      - main 
+      - main  
     paths:
       - 'fit-front/**'  
 
@@ -28,6 +28,9 @@ jobs:
           echo "NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}" >> .env.local
           echo "NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}" >> .env.local
           npm run build
+
+      - name: 📂 Debug Build Output (Check `out/` before upload)
+        run: ls -R fit-front/out
 
       - name: ⬆️ Deploy Only `fit-front/out/` to S3
         uses: jakejarvis/s3-sync-action@master
