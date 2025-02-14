@@ -15,3 +15,5 @@ FitGoal est une application complète de fitness et de nutrition, conçue pour f
 - **Base de données** : PostgreSQL (gérée avec Prisma et Docker)
 - **Intégration IA** : API OpenAI pour la génération de plans de repas et d'entraînement personnalisés
 - **Paiements** : Stripe pour le traitement sécurisé des paiements
+
+Checkout Link: http://goalfit.fr/
