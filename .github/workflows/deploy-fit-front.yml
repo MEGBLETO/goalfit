@@ -30,6 +30,7 @@ jobs:
           echo "NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}" >> .env.local
           npm run build
 
+
       - name: ⬆️ Deploy to S3
         uses: jakejarvis/s3-sync-action@master
         with:
