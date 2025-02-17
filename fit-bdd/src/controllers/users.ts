@@ -1,22 +1,27 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import UserManager from "../business/users";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import {
+  userSchema,
+  idSchema,
+  emailSchema,
+  tokenSchema,
+} from "../validations/index";
 
 const router = Router();
-const MAILER_URL =
-  process.env.MAILER_BASE_URL;
-
+const MAILER_URL = process.env.MAILER_BASE_URL;
 const userManager = new UserManager();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.query;
     let users;
     if (email && typeof email === "string") {
+      const { error } = emailSchema.validate({ email });
+      if (error) return res.status(400).send({ message: error.details[0].message });
       users = await userManager.getUserByEmail(email);
     } else {
-      console.log("Fetching all users");
       users = await userManager.getAllUsers();
     }
     if (!users || (Array.isArray(users) && users.length === 0)) {
@@ -24,22 +29,19 @@ router.get("/", async (req, res) => {
     }
     res.status(200).send(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).send({ message: "Internal server error" });
+    next(error);
   }
 });
 
 // Route to verify user email
-router.get("/verify-email", async (req, res) => {
+router.get("/verify-email", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = req.query;
-    if (!token || typeof token !== "string") {
-      console.error("Invalid or missing verification token.");
-      return res.status(400).send("Invalid or missing verification token.");
-    }
-    const user = await userManager.findUserByVerificationToken(token);
+    const { error } = tokenSchema.validate({ token });
+    if (error) return res.status(400).send({ message: error.details[0].message });
+
+    const user = await userManager.findUserByVerificationToken(token as string);
     if (!user) {
-      console.error("User not found with the provided verification token.");
       return res.status(400).send("Invalid or expired verification token.");
     }
     user.isEmailVerified = true;
@@ -47,18 +49,16 @@ router.get("/verify-email", async (req, res) => {
     await userManager.updateUser(user.id, user);
     res.status(200).send("Email verified successfully.");
   } catch (error) {
-    console.error("Error verifying email:", error);
-    res.status(500).send("Internal server error.");
+    next(error);
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, name, surname, password, googleId, xId } = req.body;
+    const { error } = userSchema.validate(req.body);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
-    if (!name || !surname) {
-      return res.status(400).send("Name and surname are required.");
-    }
+    const { email, name, surname, password, googleId, xId } = req.body;
     let verificationToken = password ? uuidv4() : null;
     const user = await userManager.createUser({
       email,
@@ -72,6 +72,7 @@ router.post("/", async (req, res) => {
     });
 
     if (googleId) {
+      console.log(process.env.APP_URL, 'here it isisisisisisisi');
       const profileCompletionUrl = `${process.env.APP_URL}/complete-profile`;
       const welcomeUrl = `${process.env.BACKEND_URL}/mailer/mail/send-welcome-email`;
 
@@ -84,7 +85,7 @@ router.post("/", async (req, res) => {
     } else {
       const verificationUrl = `${process.env.APP_URL}/verify-email?token=${verificationToken}`;
       await axios.post(
-        `${process.env.BACKEND_URL}/mailer/mail/send-verification-email`,
+        `${process.env.BACKEND_BASE_URL}/mailer/mail/send-verification-email`,
         {
           email,
           name,
@@ -92,96 +93,93 @@ router.post("/", async (req, res) => {
         }
       );
       res.status(201).send({
-        message:
-          "Registration successful! Please check your email to verify your account.",
+        message: "Registration successful! Please check your email to verify your account.",
         user,
       });
     }
   } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).send({ error: "Failed to create user" });
+    next(error);
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userData = req.body;
+    const { error: idError } = idSchema.validate(id);
+    if (idError) return res.status(400).send({ message: idError.details[0].message });
 
-    const updatedUser = await userManager.updateUser(parseInt(id), userData);
+    const { error: userError } = userSchema.validate(req.body);
+    if (userError) return res.status(400).send({ message: userError.details[0].message });
 
+    const updatedUser = await userManager.updateUser(parseInt(id), req.body);
     res.status(200).send({
       message: `User with id ${id} updated successfully.`,
       updatedUser,
     });
   } catch (error) {
-    console.error("Failed to update user:", error);
-    res.status(500).send({ error: "Failed to update user" });
+    next(error);
   }
 });
 
-
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const userData = req.body; 
+    const { error: idError } = idSchema.validate(id);
+    if (idError) return res.status(400).send({ message: idError.details[0].message });
 
-    const updatedUser = await userManager.updateUserProfile(parseInt(id), userData);
+    const { error: userError } = userSchema.validate(req.body);
+    if (userError) return res.status(400).send({ message: userError.details[0].message });
 
+    const updatedUser = await userManager.updateUserProfile(parseInt(id), req.body);
     res.status(200).send({
       message: `User with id ${id} updated successfully.`,
       updatedUser,
     });
   } catch (error) {
-    console.error("Failed to update user:", error);
-    res.status(500).send({ error: "Failed to update user" });
+    next(error);
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    const { error } = idSchema.validate(id);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
-    if (isNaN(parseInt(id))) {
-      return res.status(400).send({ error: "Invalid user ID" });
-    }
     const user = await userManager.getUserById(parseInt(id));
-
     if (!user) {
-      return res.status(404).send({ error: "User not found" });
+      return res.status(404).send({ message: "User not found" });
     }
     res.status(200).send(user);
   } catch (error) {
-    console.error("Failed to retrieve user:", error);
-    res.status(500).send({ error: "Failed to retrieve user" });
+    next(error);
   }
 });
 
 // Delete a user
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    const { error } = idSchema.validate(id);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
     await userManager.deleteUser(parseInt(id));
-
-    res
-      .status(200)
-      .send({ message: `User with id ${id} deleted successfully.` });
+    res.status(200).send({ message: `User with id ${id} deleted successfully.` });
   } catch (error) {
-    console.error("Failed to delete user:", error);
-    res.status(500).send({ error: "Failed to delete user" });
+    next(error);
   }
 });
 
-router.get("/stripeCustomer/:id", async (req, res) =>{
-  try{
+router.get("/stripeCustomer/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
     const { id } = req.params;
-    const result = await userManager.getUserByStripeCustomerId(id);
+    const { error } = idSchema.validate(id);
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
-    res.status(200).send({data: result});
+    const result = await userManager.getUserByStripeCustomerId(id);
+    res.status(200).send({ data: result });
   } catch (error) {
-    console.error("Failed to get user by Id:", error);
-    res.status(500).json({ error: "Failed to retreive user by id" });
+    next(error);
   }
 });
 

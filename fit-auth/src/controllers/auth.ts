@@ -2,20 +2,24 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import passport from "passport";
 import axios from "axios";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
+import {
+  validateRegister,
+  validateLogin,
+  validatePasswordResetRequest,
+  validatePasswordReset,
+} from "../validations/index";
 
 const router = express.Router();
 
-router.post("/register", async (req: Request, res: Response) => {
+router.post("/register", async (req: Request, res: Response, next: NextFunction) => {
+  const { error } = validateRegister(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   const { email, password, name, surname } = req.body;
 
-  if (!name || !surname || !email || !password) {
-    return res
-      .status(400)
-      .send("Name, surname, email, and password are required.");
-  }
   try {
     let userExists = false;
     try {
@@ -29,14 +33,10 @@ router.post("/register", async (req: Request, res: Response) => {
         userExists = true;
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response && error.response.status === 404) {
-          userExists = false; 
-        } else {
-          throw error;
-        }
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        userExists = false;
       } else {
-        throw error;
+        return next(error);
       }
     }
     if (userExists) {
@@ -54,17 +54,14 @@ router.post("/register", async (req: Request, res: Response) => {
     }
     return res.status(response.status).send(response.data);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Axios error registering user:", error.message);
-    } else {
-      console.error("Unexpected error registering user:", error);
-    }
-    return res.status(500).send("Error registering user.");
+    return next(error);
   }
 });
 
+router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+  const { error } = validateLogin(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-router.post("/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     const response = await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user`, {
@@ -87,23 +84,15 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error("Error logging in:", error);
-
-    if (axios.isAxiosError(error) && error.response) {
-      return res.status(error.response.status).json({
-        message: error.response.data || "Error logging in"
-      });
-    }
-    return res.status(500).json({ message: "Internal server error" });
+    return next(error);
   }
 });
 
+router.post("/request-password-reset", async (req: Request, res: Response, next: NextFunction) => {
+  const { error } = validatePasswordResetRequest(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-router.post("/request-password-reset", async (req: Request, res: Response) => {
   const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ message: "Email is required." });
-  }
   try {
     const userResponse = await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user`, {
       params: { email }
@@ -125,19 +114,14 @@ router.post("/request-password-reset", async (req: Request, res: Response) => {
     });
     return res.status(200).json({ message: "Password reset link sent to your email." });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
-
-    if (axios.isAxiosError(error)) {
-      return res.status(error.response?.status || 500).json({
-        message: error.response?.data || "Internal server error.",
-      });
-    }
-    return res.status(500).json({ message: "Internal server error." });
+    return next(error);
   }
 });
 
+router.post("/reset-password", async (req: Request, res: Response, next: NextFunction) => {
+  const { error } = validatePasswordReset(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-router.post("/reset-password", async (req: Request, res: Response) => {
   const { email, token, password } = req.body;
   try {
     const user: any = (
@@ -159,8 +143,7 @@ router.post("/reset-password", async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return next(error);
   }
 });
 
@@ -172,12 +155,13 @@ router.get(
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userData = req.user as any;
       const id = userData.id;
       const { familyName, givenName } = userData.name;
       const email = userData.emails[0].value;
+      
       let user;
       try {
         const response = await axios.get(
@@ -225,8 +209,7 @@ router.get(
       const token = jwt.sign({ userId: user.id, email: user.email }, secret);
       res.redirect(`${process.env.APP_URL}/google-callback?token=${token}`);
     } catch (error) {
-      console.error("Error with OAuth process:", error);
-      res.status(500).send("Error with OAuth process");
+      return next(error);
     }
   }
 );
