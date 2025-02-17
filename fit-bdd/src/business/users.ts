@@ -10,7 +10,8 @@ class UserManager {
       });
       return user;
     } catch (error) {
-      throw error;
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user");
     }
   }
 
@@ -22,7 +23,8 @@ class UserManager {
       });
       return user;
     } catch (error) {
-      throw error;
+      console.error("Error updating user:", error);
+      throw new Error("Failed to update user");
     }
   }
 
@@ -74,7 +76,7 @@ class UserManager {
       return updatedUser;
     } catch (error) {
       console.error("Error updating user profile:", error);
-      throw error;
+      throw new Error("Failed to update user profile");
     }
   }
   
@@ -128,20 +130,20 @@ class UserManager {
 
   async findUserByVerificationToken(token: string) {
     try {
+      console.log("Searching for token:", token); // Log the token being searched
       const user = await prisma.user.findFirst({
         where: {
           verificationToken: token,
         },
       });
       if (!user) {
-        console.error("User not found with the provided verification token.");
+        console.error("User not found with the provided verification token:", token);
         return null;
       }
-      console.log("User found:", user);
       return user;
     } catch (error) {
       console.error("Error finding user by verification token:", error);
-      throw error;
+      throw new Error("Failed to find user by verification token");
     }
   }
 
@@ -154,7 +156,8 @@ class UserManager {
       });
       return users;
     } catch (error) {
-      throw error;
+      console.error("Error fetching all users:", error);
+      throw new Error("Failed to fetch users");
     }
   }
 
@@ -191,7 +194,8 @@ class UserManager {
       console.log(user, "helllooooo")
       return user;
     } catch (error) {
-      throw error;
+      console.error(`Error fetching user with email ${email}:`, error);
+      throw new Error("Failed to fetch user by email");
     }
   }
 
@@ -209,7 +213,8 @@ class UserManager {
       }
       return user;
     } catch (error) {
-      throw error;
+      console.error(`Error fetching user with stripe ID ${stripeCustomerId}:`, error);
+      throw new Error("Failed to fetch user by stripe customer ID");
     }
   }
 }

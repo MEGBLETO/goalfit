@@ -15,12 +15,12 @@ import {
 const router = express.Router();
 
 router.post("/register", async (req: Request, res: Response, next: NextFunction) => {
-  const { error } = validateRegister(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  const { email, password, name, surname } = req.body;
-
   try {
+    const { error } = validateRegister(req.body);
+    if (error) throw new Error(error.details[0].message);
+
+    const { email, password, name, surname } = req.body;
+
     let userExists = false;
     try {
       const userResponse = await axios.get(
@@ -40,8 +40,9 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
       }
     }
     if (userExists) {
-      return res.status(409).send("You already have an account please login!");
+      throw new Error("You already have an account please login!");
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = { email, password: hashedPassword, name, surname };
 
@@ -59,11 +60,11 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
 });
 
 router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
-  const { error } = validateLogin(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  const { email, password } = req.body;
   try {
+    const { error } = validateLogin(req.body);
+    if (error) throw new Error(error.details[0].message);
+
+    const { email, password } = req.body;
     const response = await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user`, {
       params: { email }
     });
@@ -72,7 +73,7 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        throw new Error("Invalid credentials");
       }
       const token = jwt.sign(
         { userId: user.id, email: user.email },
@@ -81,7 +82,7 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
       );
       return res.status(200).json({ token });
     } else {
-      return res.status(404).json({ message: "User not found" });
+      throw new Error("User not found");
     }
   } catch (error) {
     return next(error);
@@ -89,17 +90,17 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
 });
 
 router.post("/request-password-reset", async (req: Request, res: Response, next: NextFunction) => {
-  const { error } = validatePasswordResetRequest(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  const { email } = req.body;
   try {
+    const { error } = validatePasswordResetRequest(req.body);
+    if (error) throw new Error(error.details[0].message);
+
+    const { email } = req.body;
     const userResponse = await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user`, {
       params: { email }
     });
     const user = userResponse.data;
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      throw new Error("User not found.");
     }
     const resetToken = uuidv4();
     const resetTokenExpiry = new Date(Date.now() + 3600000); 
@@ -119,11 +120,11 @@ router.post("/request-password-reset", async (req: Request, res: Response, next:
 });
 
 router.post("/reset-password", async (req: Request, res: Response, next: NextFunction) => {
-  const { error } = validatePasswordReset(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  const { email, token, password } = req.body;
   try {
+    const { error } = validatePasswordReset(req.body);
+    if (error) throw new Error(error.details[0].message);
+
+    const { email, token, password } = req.body;
     const user: any = (
       await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user/?email=${email}`)
     ).data;
@@ -132,7 +133,7 @@ router.post("/reset-password", async (req: Request, res: Response, next: NextFun
       user.resetToken !== token ||
       user.resetTokenExpiry < new Date()
     ) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+      throw new Error("Invalid or expired token");
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
@@ -172,10 +173,7 @@ router.get(
           user = response.data;
 
           if (!user.googleId) {
-            return res.status(401).json({
-              message:
-                "Your account is registered with email and password. Please log in using those credentials.",
-            });
+            throw new Error("Your account is registered with email and password. Please log in using those credentials.");
           }
         } else {
           console.log("No user found, proceeding to create a new one...");

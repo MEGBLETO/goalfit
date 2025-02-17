@@ -28,6 +28,8 @@ const VerifyEmailContent = () => {
           { params: { token } }
         );
 
+        console.log('response', response);
+
         if (response.status === 200) {
           toast.success('Email verified successfully!');
           setMessage('Your email has been verified successfully.');
@@ -35,8 +37,7 @@ const VerifyEmailContent = () => {
             router.push('/login');
           }, 3000);
         } else {
-          toast.error('Failed to verify email.');
-          setMessage('Failed to verify email.');
+          throw new Error('Failed to verify email.');
         }
       } catch (error) {
         toast.error('An error occurred during email verification.');
@@ -48,7 +49,7 @@ const VerifyEmailContent = () => {
     };
 
     verifyEmail();
-  }, [searchParams, router]);
+  }, []); 
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">

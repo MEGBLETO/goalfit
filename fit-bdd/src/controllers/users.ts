@@ -19,7 +19,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     let users;
     if (email && typeof email === "string") {
       const { error } = emailSchema.validate({ email });
-      if (error) return res.status(400).send({ message: error.details[0].message });
+      if (error) throw new Error(error.details[0].message);
       users = await userManager.getUserByEmail(email);
     } else {
       users = await userManager.getAllUsers();
@@ -38,12 +38,18 @@ router.get("/verify-email", async (req: Request, res: Response, next: NextFuncti
   try {
     const { token } = req.query;
     const { error } = tokenSchema.validate({ token });
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) throw new Error(error.details[0].message);
 
     const user = await userManager.findUserByVerificationToken(token as string);
     if (!user) {
-      return res.status(400).send("Invalid or expired verification token.");
+      throw new Error("Invalid or expired verification token.");
     }
+
+    // Check if the user is already verified
+    if (user.isEmailVerified) {
+      return res.status(200).json({ message: "Email is already verified." });
+    }
+
     user.isEmailVerified = true;
     user.verificationToken = null;
     await userManager.updateUser(user.id, user);
@@ -56,7 +62,7 @@ router.get("/verify-email", async (req: Request, res: Response, next: NextFuncti
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { error } = userSchema.validate(req.body);
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) throw new Error(error.details[0].message);
 
     const { email, name, surname, password, googleId, xId } = req.body;
     let verificationToken = password ? uuidv4() : null;
@@ -72,7 +78,6 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     });
 
     if (googleId) {
-      console.log(process.env.APP_URL, 'here it isisisisisisisi');
       const profileCompletionUrl = `${process.env.APP_URL}/complete-profile`;
       const welcomeUrl = `${process.env.BACKEND_URL}/mailer/mail/send-welcome-email`;
 
@@ -85,7 +90,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     } else {
       const verificationUrl = `${process.env.APP_URL}/verify-email?token=${verificationToken}`;
       await axios.post(
-        `${process.env.BACKEND_BASE_URL}/mailer/mail/send-verification-email`,
+        `${process.env.BACKEND_URL}/mailer/mail/send-verification-email`,
         {
           email,
           name,
@@ -106,10 +111,10 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { error: idError } = idSchema.validate(id);
-    if (idError) return res.status(400).send({ message: idError.details[0].message });
+    if (idError) throw new Error(idError.details[0].message);
 
     const { error: userError } = userSchema.validate(req.body);
-    if (userError) return res.status(400).send({ message: userError.details[0].message });
+    if (userError) throw new Error(userError.details[0].message);
 
     const updatedUser = await userManager.updateUser(parseInt(id), req.body);
     res.status(200).send({
@@ -125,10 +130,10 @@ router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => 
   try {
     const { id } = req.params;
     const { error: idError } = idSchema.validate(id);
-    if (idError) return res.status(400).send({ message: idError.details[0].message });
+    if (idError) throw new Error(idError.details[0].message);
 
     const { error: userError } = userSchema.validate(req.body);
-    if (userError) return res.status(400).send({ message: userError.details[0].message });
+    if (userError) throw new Error(userError.details[0].message);
 
     const updatedUser = await userManager.updateUserProfile(parseInt(id), req.body);
     res.status(200).send({
@@ -144,7 +149,7 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { error } = idSchema.validate(id);
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) throw new Error(error.details[0].message);
 
     const user = await userManager.getUserById(parseInt(id));
     if (!user) {
@@ -161,7 +166,7 @@ router.delete("/:id", async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { id } = req.params;
     const { error } = idSchema.validate(id);
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) throw new Error(error.details[0].message);
 
     await userManager.deleteUser(parseInt(id));
     res.status(200).send({ message: `User with id ${id} deleted successfully.` });
@@ -174,7 +179,7 @@ router.get("/stripeCustomer/:id", async (req: Request, res: Response, next: Next
   try {
     const { id } = req.params;
     const { error } = idSchema.validate(id);
-    if (error) return res.status(400).send({ message: error.details[0].message });
+    if (error) throw new Error(error.details[0].message);
 
     const result = await userManager.getUserByStripeCustomerId(id);
     res.status(200).send({ data: result });

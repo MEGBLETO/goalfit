@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import 'dotenv/config';
 import helmet from "helmet";
 import morgan from "morgan";

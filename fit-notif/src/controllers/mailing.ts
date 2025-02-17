@@ -93,6 +93,7 @@ router.post('/send-password-reset-email', async (req, res) => {
 // Route to send an account verification email
 router.post('/send-verification-email', async (req, res) => {
     try {
+        console.log("first", req.body);
         const { email, name, verificationUrl } = req.body;
         const response = await mailServiceI.sendVerificationEmail(email, name, verificationUrl);
         res.status(200).json({ message: 'Verification email sent successfully', response });
