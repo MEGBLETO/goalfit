@@ -24,7 +24,7 @@ export async function middleware(req) {
 export const config = {
   matcher: [
     '/home',
-    '/profile',
+    '/profil',
     '/account',
     '/workoutplan',
     '/mealplan',
