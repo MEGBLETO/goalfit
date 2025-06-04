@@ -34,7 +34,6 @@ export default function Home() {
         const token = response.data.token;
         Cookies.set("token", token, { expires: 1, path: "/" });
   
-        // Use atob to decode the JWT token
         const decodedToken = parseJwt(token);
           const userId = decodedToken.userId;
           const userResponse = await axios.get(

@@ -83,6 +83,7 @@ router.put("/mealplans", isAuthenticated, async (req, res) => {
   }
 });
 
+
 // Delete a meal plan
 router.delete("/", isAuthenticated, async (req, res) => {
   const { date } = req.body;
@@ -118,6 +119,7 @@ router.get("/default", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch default meal plans." });
   }
 });
+
 
 router.get("/:id", isAuthenticated, async (req, res) => {
   try {

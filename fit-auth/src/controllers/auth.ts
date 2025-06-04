@@ -23,6 +23,7 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
 
     let userExists = false;
     try {
+      console.log( `${process.env.BACKEND_BASE_URL}/bdd/user`,)
       const userResponse = await axios.get(
         `${process.env.BACKEND_BASE_URL}/bdd/user`,
         {
@@ -63,8 +64,10 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { error } = validateLogin(req.body);
     if (error) throw new Error(error.details[0].message);
-
+    
     const { email, password } = req.body;
+    console.log("Attempting to log in user with email:",password, email);
+
     const response = await axios.get(`${process.env.BACKEND_BASE_URL}/bdd/user`, {
       params: { email }
     });

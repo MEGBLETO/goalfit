@@ -15,6 +15,7 @@ const userManager = new UserManager();
 
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("hellloooooooo")
     const { email } = req.query;
     let users;
     if (email && typeof email === "string") {
@@ -29,6 +30,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     }
     res.status(200).send(users);
   } catch (error) {
+    console.log(error, "jdsjdnjkndsjdn")
     next(error);
   }
 });
