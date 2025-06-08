@@ -60,7 +60,7 @@ export default function Home() {
     }
   };
   const handleGoogleSignIn = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/authenticate/auth/google`;
+    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`;
   };
 
   return (

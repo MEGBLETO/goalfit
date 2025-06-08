@@ -16,7 +16,7 @@ export default function RequestPasswordReset() {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/authenticate/request-password-reset`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/request-password-reset`,
         data
       );
       if (response.status === 200) {

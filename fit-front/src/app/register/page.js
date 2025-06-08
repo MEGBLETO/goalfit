@@ -21,7 +21,7 @@ export default function Home() {
         surname: data.lastName,
         name: data.firstName,
       };
-      const registrationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/authenticate/register`;
+      const registrationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/register`;
       const response = await axios.post(registrationUrl, registrationData);
       if (response.status === 201) {
         toast.success("Compte créé avec succès !");
@@ -34,13 +34,13 @@ export default function Home() {
       }
     } catch (error) {
       console.log(error.response.data.message);
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.message); 
       console.error(error);
     }
   };
 
   const handleGoogleSignIn = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/authenticate/auth/google`;
+    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`;
   };
 
   const password = watch("password");

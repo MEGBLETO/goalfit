@@ -24,7 +24,7 @@ const VerifyEmailContent = () => {
 
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/bdd/user/verify-email`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email`,
           { params: { token } }
         );
 

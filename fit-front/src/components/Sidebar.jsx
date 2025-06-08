@@ -2,7 +2,6 @@
 
 import jwt from 'jsonwebtoken'
 
-import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { NavigateNext } from '@mui/icons-material'
@@ -10,12 +9,15 @@ import { Button, Sidebar, Card } from 'flowbite-react'
 import { HiChartPie, HiViewBoards, HiUser, HiFire } from 'react-icons/hi'
 import { usePathname } from 'next/navigation'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
+
 var isToday = require('dayjs/plugin/isToday')
 
 dayjs.extend(isToday)
 
 export default function SidebarHome({ isSidebarOpen }) {
   const pathname = usePathname()
+  const router = useRouter()
   const isActive = (path) => pathname === path
   const [user, setUser] = useState({})
 

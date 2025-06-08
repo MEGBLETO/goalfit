@@ -75,7 +75,8 @@ const Navbar = ({ handleSidebar }) => {
   const pathname = usePathname()
   const router = useRouter()
 
-  const isActive = (path) => pathname.pathname === path
+  const isActive = (path) => pathname === path
+
 
   const sidebarItems = [
     {
@@ -119,7 +120,7 @@ const Navbar = ({ handleSidebar }) => {
 
     if (!token) {
       router.push('/login')
-      setLoading(false)
+      // setLoading(false)
       return
     }
 
@@ -153,10 +154,7 @@ const Navbar = ({ handleSidebar }) => {
   }, [])
 
   const signOut = () => {
-    // Remove the token from the cookies
     Cookies.remove('token')
-
-    // Redirect to login or home page after logout
     router.push('/login')
   }
 
